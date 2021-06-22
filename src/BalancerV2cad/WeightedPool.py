@@ -1,6 +1,6 @@
 from decimal import Decimal
-from model.pools.weighted.WeightedMath import WeightedMath
-from model.pools.BalancerConstants import *
+from BalancerV2cad.WeightedMath import WeightedMath
+from BalancerV2cad.BalancerConstants import *
 
 
 class WeightedPool(WeightedMath):
@@ -25,11 +25,15 @@ class WeightedPool(WeightedMath):
         balances = [self._balances[token_in], self._balances[token_out]]
         weights = [self._weights[token_in], self._weights[token_out]]
         
-        if(given_in): amount_out = WeightedMath.calc_out_given_in(balances[0], weights[0], balances[1], weights[1], swap_amount)
-        else: amount_out = WeightedMath.calc_in_given_out(balances[0], weights[0], balances[1], weights[1], swap_amount)
+        if(given_in):
+            amount_in = swap_amount
+            amount_out = WeightedMath.calc_out_given_in(balances[0], weights[0], balances[1], weights[1], swap_amount)
+        else:
+            amount_in = WeightedMath.calc_in_given_out(balances[0], weights[0], balances[1], weights[1], swap_amount)
+            amount_out = swap_amount
             
         self._balances[token_out] -= amount_out
-        self._balances[token_in] += swap_amount
+        self._balances[token_in] += amount_in
         return amount_out
     
     def join_pool(self, balances: dict, weights: dict):
